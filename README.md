@@ -20,10 +20,36 @@ Markdown is converted with [goldmark](https://github.com/yuin/goldmark) (GFM, fo
 
 ## ✅ Requirements
 * **Google Chrome / Chromium** (131 or later is recommended; see Known Limitations below)
-* **Japanese fonts** — e.g. on Debian/Ubuntu/WSL:
-  ```bash
-  sudo apt install -y fonts-noto-cjk
-  ```
+* **Japanese fonts**
+
+After installing, run `kumi -check` to verify your environment.
+
+### 🐧 Linux (Debian / Ubuntu / WSL)
+```bash
+# Google Chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
+
+# Japanese fonts
+sudo apt install -y fonts-noto-cjk
+```
+On WSL, use the .deb version of Google Chrome rather than the snap version of Chromium.
+
+### 🍎 macOS
+```bash
+# Google Chrome
+brew install --cask google-chrome
+```
+Japanese fonts are built into macOS, so no extra installation is needed.
+
+### 🪟 Windows
+```powershell
+# Google Chrome
+winget install -e --id Google.Chrome
+```
+Japanese fonts are built into Windows, so no extra installation is needed.
+
+If Chrome is installed in a non-standard location, specify it with `-chrome <path>`.
 
 ## 💾 Download
 Download prebuilt binaries from the latest release:  
