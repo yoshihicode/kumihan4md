@@ -10,6 +10,7 @@
 * **📄 Page-Break Aware:** Manual page breaks, a page break before each chapter (h1), no page break right after a heading, and code blocks, blockquotes, images and table rows that stay on one page.
 * **🔁 Repeated Table Headers:** When a table spans multiple pages, its header row is repeated on each page.
 * **🎨 Syntax Highlighting:** Code blocks are highlighted with [chroma](https://github.com/alecthomas/chroma), and you can choose the style.
+* **📊 Mermaid Diagrams:** `mermaid` code blocks are rendered as diagrams.
 * **📑 Table of Contents & Bookmarks:** Generates a clickable table of contents and PDF bookmarks (outline) from your headings.
 * **🏷️ Cover Page:** Builds a cover page from the YAML front matter.
 * **🔢 Page Numbers:** Page numbers appear in the footer. The cover page is not counted.
@@ -126,16 +127,6 @@ toc: true                    # same as -toc
 ---
 ```
 
-
-### 📊 Mermaid Diaglam
-If you specify “mermaid” as the language for a code block, that code block will be displayed as a diagram.
-````
-```mermaid
-flowchart LR
-    A[Markdown] --> B[HTML] --> C[PDF]
-```
-````
-
 #### Fields
 | Field | Type | Description | Note |
 | --- | --- | --- | --- |
@@ -162,6 +153,19 @@ flowchart LR
 
 ## 📑 Table of Contents
 Use `-toc` to generate a table of contents. Put `<!-- toc -->` or `[[toc]]` on a line by itself to place it there; otherwise it goes at the top. Each entry links to its heading. Use `-toc-depth` to set the depth and `-toc-title` to set the heading text.
+
+## 📊 Mermaid Diagrams
+Code blocks with the language `mermaid` are rendered as diagrams with [Mermaid](https://mermaid.js.org/).
+
+````markdown
+```mermaid
+flowchart LR
+    A[Markdown] --> B[HTML] --> C[PDF]
+```
+````
+
+* Mermaid is embedded in `kumi`, so no internet connection is required.
+* Diagrams wider than the page are scaled down to fit and are not split across pages.
 
 ## 📘 Usage
 ```
