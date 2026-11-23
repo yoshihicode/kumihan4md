@@ -32,6 +32,8 @@ release:
 # brews（Formula）は GoReleaser v2.10 で非推奨になったため homebrew_casks を使う
 homebrew_casks:
   - name: kumihan4md
+    binaries:
+      -  kumi
     repository:
       owner: yoshihicode
       name: homebrew-tap
