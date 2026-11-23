@@ -1,0 +1,43 @@
+project_name: kumihan4md
+env:
+  - GO111MODULE=on
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: ./cmd/kumi
+    binary: kumi
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Revision={{.ShortCommit}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - 386
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+release:
+  prerelease: auto
+brews:
+  - name: kumihan4md
+    repository:
+      owner: yoshihicode
+      name: homebrew-tap
+    directory: Formula
+    homepage: "https://github.com/yoshihicode/kumihan4md"
+    description: "Typeset Markdown into page-break-aware PDFs (command: kumi)."
+    license: "MIT"
+    caveats: |
+      kumi requires Google Chrome (131 or later) and Japanese fonts.
+      Run `kumi -check` to verify your environment.
+    test: |
+      system "#{bin}/kumi", "-version"
+    install: |
+      bin.install "kumi"

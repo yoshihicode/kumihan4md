@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{.Title}}</title>
+  <style>{{.CSS}}</style>
+</head>
+
+<body class="{{.BodyClass}}">
+  {{with .Cover}}{{$l := .Labels}}
+  <section class="cover">
+    <div class="cover-main">
+      <div class="cover-title">{{.Title}}</div>
+      {{with .Subtitle}}<div class="cover-subtitle">{{.}}</div>{{end}}
+    </div>
+    <dl class="cover-meta">
+      {{with .Version}}<div>
+        <dt>{{$l.Version}}</dt>
+        <dd>{{.}}</dd>
+      </div>{{end}}
+      {{with .Date}}<div>
+        <dt>{{$l.Date}}</dt>
+        <dd>{{.}}</dd>
+      </div>{{end}}
+      {{with .Author}}<div>
+        <dt>{{$l.Author}}</dt>
+        <dd>{{.}}</dd>
+      </div>{{end}}
+    </dl>
+    {{with .Organization}}<div class="cover-org">{{.}}</div>{{end}}
+  </section>
+  {{end}}
+  <main class="markdown-body">
+    {{.Body}}
+  </main>
+</body>
+
+</html>

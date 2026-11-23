@@ -1,0 +1,320 @@
+/* ===== 用紙 ===== */
+@page {
+  size: A4;
+  margin: 20mm 18mm 22mm 18mm;
+  /* 下はページ番号用に少し広め */
+}
+
+:root {
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --code-bg: #f6f8fa;
+  --accent: #f38020;
+}
+
+html {
+  font-size: 10.5pt;
+}
+
+body {
+  margin: 0;
+  color: var(--fg);
+  font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  line-height: 1.75;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.markdown-body> :first-child {
+  margin-top: 0;
+}
+
+/* ===== 見出し：直後で改ページさせない（見出しだけページ末尾に残るのを防ぐ） ===== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.4;
+  margin: 1.6em 0 0.6em;
+  break-after: avoid;
+  break-inside: avoid;
+}
+
+h1 {
+  font-size: 1.8em;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.2em;
+}
+
+h2 {
+  font-size: 1.4em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.15em;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+h4 {
+  font-size: 1.05em;
+}
+
+/* ===== 本文：ページ境界で1〜2行だけ孤立するのを防ぐ ===== */
+p,
+li {
+  orphans: 3;
+  widows: 3;
+}
+
+p {
+  margin: 0 0 0.9em;
+}
+
+ul,
+ol {
+  margin: 0 0 0.9em;
+  padding-left: 1.6em;
+}
+
+/* ===== 分割させたくない要素 ===== */
+pre,
+blockquote,
+figure,
+img,
+.katex-display {
+  break-inside: avoid;
+}
+
+/* ===== コード ===== */
+code,
+pre {
+  font-family: "Noto Sans Mono", "Cascadia Mono", "Consolas", "Noto Sans CJK JP", monospace;
+}
+
+:not(pre)>code {
+  background: var(--code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.8em 1em;
+  font-size: 0.85em;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  /* 横にはみ出さず折り返す */
+  overflow-wrap: anywhere;
+}
+
+/* ===== 表：ページをまたぐ場合はヘッダ行を各ページで繰り返す ===== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 0 1em;
+  font-size: 0.95em;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tr {
+  break-inside: avoid;
+}
+
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 0.35em 0.6em;
+}
+
+th {
+  background: var(--code-bg);
+  text-align: left;
+}
+
+/* ===== その他 ===== */
+img {
+  max-width: 100%;
+}
+
+blockquote {
+  margin: 0 0 1em;
+  padding: 0.2em 1em;
+  color: var(--muted);
+  border-left: 4px solid var(--border);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.5em 0;
+}
+
+a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+/* ===== 改ページ ===== */
+.page-break {
+  break-before: page;
+  height: 0;
+  margin: 0;
+}
+
+/* -h1-break: 2つ目以降の h1 で改ページ（直前に手動改ページがあれば二重にしない） */
+.h1-break .markdown-body>h1:not(:first-of-type) {
+  break-before: page;
+}
+
+.h1-break .markdown-body>.page-break+h1 {
+  break-before: auto;
+}
+
+/* ===== シンタックスハイライト（chroma）の調整 ===== */
+pre.chroma {
+  background: var(--code-bg);
+}
+
+pre.chroma .line {
+  display: inline;
+}
+
+/* chroma既定の flex だと pre-wrap で折り返さないため */
+
+/* ===== 表紙 =====
+   名前付きページ「cover」で、表紙だけ余白を0にし、ページ番号を出さず、ページ数にも数えない
+   （本文が 1 ページ目から始まる） */
+@page cover {
+  margin: 0;
+  counter-increment: page 0;
+
+  @bottom-center {
+    content: none;
+  }
+}
+
+.cover {
+  page: cover;
+  break-after: page;
+  padding: 75mm 25mm 0;
+}
+
+.cover-main {
+  border-left: 6px solid var(--accent);
+  padding-left: 8mm;
+}
+
+.cover-title {
+  font-size: 26pt;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.cover-subtitle {
+  font-size: 14pt;
+  color: var(--muted);
+  margin-top: 4mm;
+}
+
+.cover-meta {
+  margin: 70mm 0 0;
+  padding-left: 14mm;
+}
+
+.cover-meta>div {
+  display: flex;
+  gap: 6mm;
+  margin-bottom: 2mm;
+}
+
+.cover-meta dt {
+  min-width: 16mm;
+  color: var(--muted);
+}
+
+.cover-meta dd {
+  margin: 0;
+}
+
+.cover-org {
+  margin-top: 12mm;
+  padding-left: 14mm;
+  font-size: 13pt;
+  font-weight: 700;
+}
+
+/* ===== 目次 ===== */
+.toc {
+  break-after: page;
+}
+
+.toc-title {
+  font-size: 1.6em;
+  font-weight: 700;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.2em;
+  margin-bottom: 0.8em;
+}
+
+.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc li {
+  margin: 0.25em 0;
+  break-inside: avoid;
+}
+
+.toc a {
+  color: var(--fg);
+}
+
+.toc-d0 {
+  font-weight: 700;
+  margin-top: 0.7em !important;
+}
+
+.toc-d1 {
+  padding-left: 1.5em;
+}
+
+.toc-d2 {
+  padding-left: 3em;
+  font-size: 0.95em;
+}
+
+.toc-d3,
+.toc-d4,
+.toc-d5 {
+  padding-left: 4.5em;
+  font-size: 0.9em;
+}
+
+/* ===== -keep-lines：見出しの下に N 行分の余白がなければ見出しごと次ページへ =====
+   見出しの後ろに「N 行分の高さ」と「同じ量の負のマージン」を持つ要素を置く。
+   レイアウト上は相殺されて見た目は変わらないが、まとめた要素を分割禁止にしているため、
+   ページの残りが N 行分に満たないと、見出しごと次ページに送られる。 */
+.keep-with-next {
+  break-inside: avoid;
+}
+
+.keep-spacer {
+  height: calc(var(--keep-lines, 0) * 1lh);
+  margin-bottom: calc(var(--keep-lines, 0) * -1lh);
+}
+
+.markdown-body>.keep-with-next:first-child> :first-child {
+  margin-top: 0;
+}
