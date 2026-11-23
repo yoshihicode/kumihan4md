@@ -50,7 +50,7 @@ func Print(w io.Writer, explicitChrome string) bool {
 			allOK = false
 		}
 	}
-	fmt.Fprintln(w, "  Note: Go libraries (goldmark, chromedp, etc.) are built into the binary and need no check.")
+
 	return allOK
 }
 
