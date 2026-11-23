@@ -10,7 +10,7 @@
   --muted: #59636e;
   --border: #d1d9e0;
   --code-bg: #f6f8fa;
-  --accent: #f38020;
+  --accent: #0087FF;
 }
 
 html {
@@ -317,4 +317,21 @@ pre.chroma .line {
 
 .markdown-body>.keep-with-next:first-child> :first-child {
   margin-top: 0;
+}
+
+/* ===== Mermaid の図 =====
+   PDF 化の直前に <pre class="mermaid"> の中身が SVG に置き換わる */
+pre.mermaid {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0 0 1em;
+  text-align: center;
+  white-space: normal;
+  break-inside: avoid;
+}
+
+pre.mermaid svg {
+  max-width: 100%;
+  height: auto;
 }

@@ -46,14 +46,14 @@ func Run(o Options) error {
 	}
 
 	// Markdown → HTML
-	md, hasTOCMarker := markdown.Preprocess(strings.ReplaceAll(string(src), "\r\n", "\n"))
-	doc, err := markdown.Convert(md, o.HighlightStyle)
+	pre := markdown.Preprocess(strings.ReplaceAll(string(src), "\r\n", "\n"))
+	doc, err := markdown.Convert(pre.Markdown, o.HighlightStyle)
 	if err != nil {
 		return err
 	}
 
 	body := doc.Body
-	if o.TOC || hasTOCMarker || markdown.MetaBool(doc.Meta, "toc") {
+	if o.TOC || pre.HasTOC || markdown.MetaBool(doc.Meta, "toc") {
 		body = markdown.InsertTOC(body, markdown.BuildTOC(doc.Headings, o.TOCDepth, o.TOCTitle))
 	}
 
@@ -121,6 +121,7 @@ func Run(o Options) error {
 	out, err := pdf.RenderHTML(ctx, html, filepath.Dir(absIn), pdf.Options{
 		ChromePath: chrome,
 		Outline:    o.Outline,
+		Mermaid:    pre.HasMermaid,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to generate PDF: %w", err)

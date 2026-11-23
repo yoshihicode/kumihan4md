@@ -66,6 +66,17 @@ func main() {
 ↑コードブロック内のマーカーは改ページされない
 ```
 
+## 処理の流れ（Mermaid）
+
+```mermaid
+flowchart LR
+    A["Markdown<br>sample.md"] --> B["前処理<br>改ページ・目次マーカー"]
+    B --> C["HTML変換<br>goldmark"]
+    C --> D["HTML組み立て<br>CSS・表紙・目次"]
+    D --> E["印刷<br>ヘッドレスChrome"]
+    E --> F["PDF<br>sample.pdf"]
+```
+
 <!-- pagebreak -->
 
 # 第2章

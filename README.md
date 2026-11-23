@@ -126,6 +126,16 @@ toc: true                    # same as -toc
 ---
 ```
 
+
+### 📊 Mermaid Diaglam
+If you specify “mermaid” as the language for a code block, that code block will be displayed as a diagram.
+````
+```mermaid
+flowchart LR
+    A[Markdown] --> B[HTML] --> C[PDF]
+```
+````
+
 #### Fields
 | Field | Type | Description | Note |
 | --- | --- | --- | --- |
