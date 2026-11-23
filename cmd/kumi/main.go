@@ -31,6 +31,7 @@ func main() {
 	flag.BoolVar(&o.H1Break, "h1-break", true, "insert a page break before every h1 except the first")
 	flag.IntVar(&o.KeepLines, "keep-lines", 0, "move a heading to the next page if fewer than N lines of space remain below it (0 to disable)")
 	flag.StringVar(&o.KeepLevels, "keep-levels", "2,3", "heading levels affected by -keep-lines (comma-separated, 1-6)")
+	flag.IntVar(&o.CodeKeepLines, "code-keep-lines", 15, "keep code blocks of up to N lines on one page; longer blocks may split across pages (0: always allow splitting)")
 	flag.BoolVar(&o.PageNumbers, "page-number", true, "show page numbers in the footer")
 	flag.StringVar(&o.HighlightStyle, "hl-style", "github", `syntax highlighting style (chroma style name, "none" to disable)`)
 	flag.BoolVar(&o.TOC, "toc", false, "generate a table of contents (at <!-- toc --> if present, otherwise at the top)")

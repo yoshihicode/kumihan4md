@@ -71,6 +71,7 @@ type Options struct {
 	H1Break      bool
 	KeepLines    int
 	KeepLevels   string // "2,3" 形式
+	CodeKeep     int    // この行数以下のコードブロックはページで分割しない（0 なら常に分割可）
 }
 
 // ValidPaperSize は用紙サイズの文字列を検証する。CSS に直接埋め込むため英数字・空白・ピリオドのみ許可する。
@@ -95,7 +96,17 @@ func ParseLevels(s string) (string, error) {
 
 // Build は印刷用の HTML 文書を組み立てる。
 func Build(o Options) ([]byte, error) {
+	// 埋め込みファイルが空のままビルドされると、スタイルのない PDF が黙って出力されるため、ここで止める
+	if !strings.Contains(defaultCSS, ".markdown-body") {
+		return nil, fmt.Errorf("embedded style.css is empty or broken (%d bytes); check internal/page/assets/style.css and rebuild", len(defaultCSS))
+	}
+	if !strings.Contains(pageTemplate, "{{.CSS}}") {
+		return nil, fmt.Errorf("embedded template.gohtml is broken; check internal/page/assets/template.gohtml (an editor may have reformatted it) and rebuild")
+	}
 	body := o.Body
+	if o.CodeKeep > 0 {
+		body = markShortCode(body, o.CodeKeep)
+	}
 	if o.KeepLines > 0 {
 		var err error
 		if body, err = wrapHeadings(body, o.KeepLevels); err != nil {
@@ -136,6 +147,26 @@ func Build(o Options) ([]byte, error) {
 		"Body":      template.HTML(body),
 	})
 	return out.Bytes(), err
+}
+
+var preRe = regexp.MustCompile(`(?s)<pre([^>]*)>(.*?)</pre>`)
+
+// markShortCode は maxLines 行以下のコードブロックに keep-together クラスを付ける（ページで分割しない）。
+// Mermaid の図（pre.mermaid）は CSS で常に分割しないため対象外。
+func markShortCode(body string, maxLines int) string {
+	return preRe.ReplaceAllStringFunc(body, func(m string) string {
+		sub := preRe.FindStringSubmatch(m)
+		attrs, content := sub[1], sub[2]
+		if strings.Contains(attrs, "mermaid") || strings.Count(content, "\n") > maxLines {
+			return m
+		}
+		if i := strings.Index(attrs, `class="`); i >= 0 {
+			attrs = attrs[:i+len(`class="`)] + "keep-together " + attrs[i+len(`class="`):]
+		} else {
+			attrs += ` class="keep-together"`
+		}
+		return "<pre" + attrs + ">" + content + "</pre>"
+	})
 }
 
 // wrapHeadings は対象レベルの見出しを、N 行分の余白を確保する要素と一緒に囲む（-keep-lines）。

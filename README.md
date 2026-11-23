@@ -147,7 +147,8 @@ toc: true                    # same as -toc
 | After cover / TOC | A page break is inserted automatically. |
 | Chapters | A page break is inserted before every h1 except the first (default). Use `-h1-break=false` to turn this off. |
 | Headings | No page break right after a heading. |
-| No splitting | Code blocks, blockquotes, images and table rows are not split across pages (unless they are taller than a page). |
+| No splitting | Blockquotes, images, Mermaid diagrams and table rows are not split across pages (unless they are taller than a page). |
+| Code blocks | Code blocks of up to 15 lines are kept on one page. Longer blocks may split across pages. Use `-code-keep-lines` to change the limit (`0` always allows splitting). |
 | Tables | The header row is repeated on each page. |
 | Keep with next | With `-keep-lines 3`, a heading moves to the next page if fewer than 3 lines of space remain below it. Use `-keep-levels` to choose the heading levels (default `2,3`). |
 
@@ -176,6 +177,8 @@ Options:
         check the runtime environment (Chrome, Japanese fonts) and exit
   -chrome string
         path to the Chrome/Chromium executable (default: auto-detect)
+  -code-keep-lines int
+        keep code blocks of up to N lines on one page; longer blocks may split across pages (0: always allow splitting) (default 15)
   -cover
         generate a cover page from the front matter
   -cover-labels string
@@ -236,7 +239,7 @@ kumihan4md/
 └── internal/
     ├── app/             # overall flow (Markdown → HTML → PDF)
     ├── markdown/        # preprocessing (page-break / TOC markers), HTML conversion, TOC, front matter, highlighting
-    ├── page/            # print-ready HTML (CSS, cover page, page numbers, -keep-lines)
+    ├── page/            # print-ready HTML (CSS, cover page, page numbers, -keep-lines, -code-keep-lines)
     │   └── assets/      # style.css / template.html (embedded with go:embed)
     ├── pdf/             # prints HTML to PDF with chromedp
     └── envcheck/        # runtime environment check (Chrome, Japanese fonts)

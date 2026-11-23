@@ -81,11 +81,25 @@ ol {
 }
 
 /* ===== 分割させたくない要素 ===== */
-pre,
 blockquote,
 figure,
 img,
 .katex-display {
+  break-inside: avoid;
+}
+
+/* コードブロックは途中で分割してよい（長いブロックが丸ごと次ページに送られ、見出しだけが残るのを防ぐ）。
+   ページ境界に 1〜2 行だけ残らないようにし、分割された各部分にも枠と余白を付ける。
+   短いブロック（-code-keep-lines 行以下）には keep-together クラスが付き、分割しない。 */
+pre {
+  break-inside: auto;
+  orphans: 3;
+  widows: 3;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+pre.keep-together {
   break-inside: avoid;
 }
 

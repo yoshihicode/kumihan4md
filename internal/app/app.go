@@ -21,7 +21,7 @@ type Options struct {
 	HighlightStyle, TOCTitle, KeepLevels                      string
 	CoverLabels                                               string // "version=版,date=日付,author=作成者" 形式
 	H1Break, PageNumbers, TOC, Cover, Outline                 bool
-	TOCDepth, KeepLines                                       int
+	TOCDepth, KeepLines, CodeKeepLines                        int
 	Timeout                                                   time.Duration
 }
 
@@ -101,6 +101,7 @@ func Run(o Options) error {
 		H1Break:      o.H1Break,
 		KeepLines:    o.KeepLines,
 		KeepLevels:   o.KeepLevels,
+		CodeKeep:     o.CodeKeepLines,
 	})
 	if err != nil {
 		return err
@@ -139,6 +140,9 @@ func validate(o Options) error {
 	}
 	if o.TOCDepth < 1 || o.TOCDepth > 6 {
 		return fmt.Errorf("-toc-depth must be between 1 and 6")
+	}
+	if o.CodeKeepLines < 0 {
+		return fmt.Errorf("-code-keep-lines must be 0 or greater")
 	}
 	if o.KeepLines < 0 || o.KeepLines > 20 {
 		return fmt.Errorf("-keep-lines must be between 0 and 20")
