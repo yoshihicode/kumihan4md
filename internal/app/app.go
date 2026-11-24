@@ -18,9 +18,9 @@ import (
 // Options はコマンドラインから受け取る設定。
 type Options struct {
 	Input, Output, CSSPath, PaperSize, Title, HTMLOut, Chrome string
-	HighlightStyle, TOCTitle, KeepLevels                      string
+	HighlightStyle, TOCTitle, KeepLevels, BreakLevels         string
 	CoverLabels                                               string // "version=版,date=日付,author=作成者" 形式
-	H1Break, PageNumbers, TOC, Cover, Outline                 bool
+	PageNumbers, TOC, Cover, Outline                          bool
 	TOCDepth, KeepLines, CodeKeepLines                        int
 	Timeout                                                   time.Duration
 }
@@ -98,7 +98,7 @@ func Run(o Options) error {
 		ExtraCSS:     extraCSS,
 		PaperSize:    o.PaperSize,
 		PageNumbers:  o.PageNumbers,
-		H1Break:      o.H1Break,
+		BreakLevels:  o.BreakLevels,
 		KeepLines:    o.KeepLines,
 		KeepLevels:   o.KeepLevels,
 		CodeKeep:     o.CodeKeepLines,
@@ -148,7 +148,10 @@ func validate(o Options) error {
 		return fmt.Errorf("-keep-lines must be between 0 and 20")
 	}
 	if _, err := page.ParseLevels(o.KeepLevels); err != nil {
-		return err
+		return fmt.Errorf("-keep-levels: %w", err)
+	}
+	if _, err := page.ParseLevels(o.BreakLevels); err != nil {
+		return fmt.Errorf("-break-levels: %w", err)
 	}
 	if _, err := parseLabelFlag(o.CoverLabels); err != nil {
 		return err

@@ -19,7 +19,7 @@ var (
 
 func main() {
 	var o app.Options
-	var check, showVersion bool
+	var check, showVersion, h1Break bool
 
 	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 
@@ -28,7 +28,8 @@ func main() {
 	flag.StringVar(&o.CSSPath, "css", "", "additional CSS file (loaded after the default CSS)")
 	flag.StringVar(&o.PaperSize, "size", "A4", `paper size (e.g. "A4", "A4 landscape", "B5", "Letter")`)
 	flag.StringVar(&o.Title, "title", "", "document title (default: front matter title, then the first h1)")
-	flag.BoolVar(&o.H1Break, "h1-break", true, "insert a page break before every h1 except the first")
+	flag.StringVar(&o.BreakLevels, "break-levels", "1", `insert a page break before headings of these levels (comma-separated, 1-6; "" to disable)`)
+	flag.BoolVar(&h1Break, "h1-break", true, `deprecated: use -break-levels (-h1-break=false is the same as -break-levels "")`)
 	flag.IntVar(&o.KeepLines, "keep-lines", 0, "move a heading to the next page if fewer than N lines of space remain below it (0 to disable)")
 	flag.StringVar(&o.KeepLevels, "keep-levels", "2,3", "heading levels affected by -keep-lines (comma-separated, 1-6)")
 	flag.IntVar(&o.CodeKeepLines, "code-keep-lines", 15, "keep code blocks of up to N lines on one page; longer blocks may split across pages (0: always allow splitting)")
@@ -52,6 +53,13 @@ func main() {
 		envcheck.Print(w, o.Chrome)
 	}
 	flag.Parse()
+
+	// 旧オプション -h1-break との互換: -break-levels が指定されていなければ -h1-break=false を反映する
+	setFlags := map[string]bool{}
+	flag.Visit(func(f *flag.Flag) { setFlags[f.Name] = true })
+	if setFlags["h1-break"] && !setFlags["break-levels"] && !h1Break {
+		o.BreakLevels = ""
+	}
 
 	if showVersion {
 		if Revision != "" {

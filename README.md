@@ -7,7 +7,7 @@
 `kumi` is a CLI tool that typesets Markdown into page-break-aware PDFs, with first-class support for Japanese documents.
 
 ## ⚙️ Features
-* **📄 Page-Break Aware:** Manual page breaks, a page break before each chapter (h1), no page break right after a heading, and code blocks, blockquotes, images and table rows that stay on one page.
+* **📄 Page-Break Aware:** Manual page breaks, a page break before each chapter (h1 by default, or any heading levels you choose), no page break right after a heading, and short code blocks, blockquotes, images and table rows that stay on one page. Long code blocks start right below their heading and continue across pages.
 * **🔁 Repeated Table Headers:** When a table spans multiple pages, its header row is repeated on each page.
 * **🎨 Syntax Highlighting:** Code blocks are highlighted with [chroma](https://github.com/alecthomas/chroma), and you can choose the style.
 * **📊 Mermaid Diagrams:** `mermaid` code blocks are rendered as diagrams.
@@ -96,6 +96,7 @@ kumi sample.md                              # writes sample.pdf
 kumi -cover -toc doc.md                     # add a cover page and a table of contents
 kumi -hl-style monokailight doc.md          # change the highlighting style
 kumi -o out.pdf -size "A4 landscape" doc.md # set the output path and paper size
+kumi -break-levels 2 doc.md                 # start each h2 section on a new page
 kumi -html debug.html doc.md                # save the intermediate HTML for debugging
 ```
 
@@ -145,7 +146,7 @@ toc: true                    # same as -toc
 | --- | --- |
 | Manual | Write one of `<!-- pagebreak -->`, `\pagebreak` or `\newpage` on a line by itself. Markers inside code blocks are ignored. |
 | After cover / TOC | A page break is inserted automatically. |
-| Chapters | A page break is inserted before every h1 except the first (default). Use `-h1-break=false` to turn this off. |
+| Chapters | A page break is inserted before every h1 (default). Use `-break-levels` to choose the heading levels, e.g. `-break-levels 2` for documents where h2 is the chapter level, `-break-levels 1,2` for both, or `-break-levels ""` to turn this off. No page break is inserted before the first heading, right after another heading, or right after a manual page break or the TOC. |
 | Headings | No page break right after a heading. |
 | No splitting | Blockquotes, images, Mermaid diagrams and table rows are not split across pages (unless they are taller than a page). |
 | Code blocks | Code blocks of up to 15 lines are kept on one page. Longer blocks may split across pages. Use `-code-keep-lines` to change the limit (`0` always allows splitting). |
@@ -167,12 +168,15 @@ flowchart LR
 
 * Mermaid is embedded in `kumi`, so no internet connection is required.
 * Diagrams wider than the page are scaled down to fit and are not split across pages.
+* If a diagram has a syntax error, conversion stops and shows the error message from Mermaid.
 
 ## 📘 Usage
 ```
 Usage: kumi [options] input.md
 
 Options:
+  -break-levels string
+        insert a page break before headings of these levels (comma-separated, 1-6; "" to disable) (default "1")
   -check
         check the runtime environment (Chrome, Japanese fonts) and exit
   -chrome string
@@ -186,7 +190,7 @@ Options:
   -css string
         additional CSS file (loaded after the default CSS)
   -h1-break
-        insert a page break before every h1 except the first (default true)
+        deprecated: use -break-levels (-h1-break=false is the same as -break-levels "") (default true)
   -hl-style string
         syntax highlighting style (chroma style name, "none" to disable) (default "github")
   -html string
@@ -222,6 +226,7 @@ Options:
 * **Page numbers require Chrome 131 or later.** They are drawn with CSS `@page` margin boxes. Older versions show no numbers, and `kumi -check` warns about this.
 * **The total page count is not shown.** It would include the cover page and would not match the body page numbers.
 * **PDF bookmarks require a recent Chrome.** Older versions may not generate them.
+* **Mermaid diagrams are not rendered in the intermediate HTML.** The HTML saved with `-html` contains the diagram source as text; diagrams are rendered only when printing the PDF.
 
 ## 🛠️ Build from Source
 ```bash
@@ -239,10 +244,15 @@ kumihan4md/
 └── internal/
     ├── app/             # overall flow (Markdown → HTML → PDF)
     ├── markdown/        # preprocessing (page-break / TOC markers), HTML conversion, TOC, front matter, highlighting
-    ├── page/            # print-ready HTML (CSS, cover page, page numbers, -keep-lines, -code-keep-lines)
-    │   └── assets/      # style.css / template.html (embedded with go:embed)
-    ├── pdf/             # prints HTML to PDF with chromedp
+    ├── page/            # print-ready HTML (CSS, cover page, page numbers, -break-levels, -keep-lines, -code-keep-lines)
+    │   └── assets/      # style.css / template.txt (embedded with go:embed)
+    ├── pdf/             # prints HTML to PDF with chromedp (and renders Mermaid diagrams)
+    ├── mermaid/         # embedded mermaid.js (gzip-compressed)
+    │   └── assets/      # mermaid.min.js.gz / LICENSE-mermaid
     └── envcheck/        # runtime environment check (Chrome, Japanese fonts)
 ```
 
 > **Note:** `internal/pdf` imports only chromedp (v0.24 or later), not cdproto. Importing cdproto directly can pull in a version that does not match chromedp and break the build.
+
+## 📜 Third-Party Licenses
+`kumi` embeds [Mermaid](https://github.com/mermaid-js/mermaid) (MIT License). See [`internal/mermaid/assets/LICENSE-mermaid`](internal/mermaid/assets/LICENSE-mermaid) for its license text.

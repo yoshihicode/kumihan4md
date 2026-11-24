@@ -185,13 +185,11 @@ a {
   margin: 0;
 }
 
-/* -h1-break: 2つ目以降の h1 で改ページ（直前に手動改ページがあれば二重にしない） */
-.h1-break .markdown-body>h1:not(:first-of-type) {
+/* -break-levels: 見出しの前で改ページ（どの見出しに付けるかは Go 側で判定して break-before クラスを付ける）。
+   -keep-lines で見出しが keep-with-next に包まれている場合は、包んでいる要素の前で改ページする */
+.break-before,
+.keep-with-next:has(> .break-before) {
   break-before: page;
-}
-
-.h1-break .markdown-body>.page-break+h1 {
-  break-before: auto;
 }
 
 /* ===== シンタックスハイライト（chroma）の調整 ===== */
