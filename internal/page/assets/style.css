@@ -320,6 +320,9 @@ pre.chroma .line {
    ページの残りが N 行分に満たないと、見出しごと次ページに送られる。 */
 .keep-with-next {
   break-inside: avoid;
+  /* 包んだ見出しの break-after: avoid は最後の子（.keep-spacer）から伝わらないため、ここでも指定する。
+     指定しないと、直後の図やコードが収まらないときに見出しだけがページ末尾に残る */
+  break-after: avoid;
 }
 
 .keep-spacer {
