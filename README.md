@@ -148,6 +148,7 @@ toc: true                    # same as -toc
 | After cover / TOC | A page break is inserted automatically. |
 | Chapters | A page break is inserted before every h1 (default). Use `-break-levels` to choose the heading levels, e.g. `-break-levels 2` for documents where h2 is the chapter level, `-break-levels 1,2` for both, or `-break-levels ""` to turn this off. No page break is inserted before the first heading, right after another heading, or right after a manual page break or the TOC. |
 | Headings | No page break right after a heading. |
+| Bold captions | A paragraph that is entirely bold (e.g. `**Figure name**`) is treated like a heading: no page break right after it, so it stays on the same page as the following figure or table. |
 | No splitting | Blockquotes, images, Mermaid diagrams and table rows are not split across pages (unless they are taller than a page). |
 | Code blocks | Code blocks of up to 15 lines are kept on one page. Longer blocks may split across pages. Use `-code-keep-lines` to change the limit (`0` always allows splitting). |
 | Tables | The header row is repeated on each page. |

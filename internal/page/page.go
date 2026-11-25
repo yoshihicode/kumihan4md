@@ -114,6 +114,7 @@ func Build(o Options) ([]byte, error) {
 		return nil, err
 	}
 	body = markBreaks(body, levels)
+	body = markLeadIns(body)
 	if o.CodeKeep > 0 {
 		body = markShortCode(body, o.CodeKeep)
 	}
@@ -234,6 +235,22 @@ func markShortCode(body string, maxLines int) string {
 			attrs += ` class="keep-together"`
 		}
 		return "<pre" + attrs + ">" + content + "</pre>"
+	})
+}
+
+var paraRe = regexp.MustCompile(`(?s)<p>(.*?)</p>`)
+
+// markLeadIns は太字だけの段落（**図の名前** のような小見出し）に lead-in クラスを付ける。
+// CSS で直後の要素（図・表・リストなど）との間の改ページを避け、小見出しだけがページ末尾に残るのを防ぐ。
+// 「**注意**：本文」のように太字の後に文字が続く段落は対象外（CSS だけでは区別できないため Go 側で判定する）。
+func markLeadIns(body string) string {
+	return paraRe.ReplaceAllStringFunc(body, func(m string) string {
+		inner := strings.TrimSpace(m[len("<p>") : len(m)-len("</p>")])
+		if !strings.HasPrefix(inner, "<strong>") || !strings.HasSuffix(inner, "</strong>") ||
+			strings.Count(inner, "<strong>") != 1 {
+			return m
+		}
+		return `<p class="lead-in">` + m[len("<p>"):]
 	})
 }
 
