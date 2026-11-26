@@ -20,8 +20,8 @@ var sizeRe = regexp.MustCompile(`^[A-Za-z0-9 .]+$`)
 
 // Cover は表紙に表示する情報。
 type Cover struct {
-	Title, Subtitle, Author, Organization, Date, Version string
-	Labels                                               CoverLabels
+	Title, Subtitle, Author, Organization, Date, Version, Classification string
+	Labels                                                               CoverLabels
 }
 
 // CoverLabels は表紙の項目名。
@@ -59,19 +59,57 @@ const pageNumberCSS = `
 }
 `
 
+// classificationCSS は機密区分（社外秘など）を各ページのヘッダー右上に描く（@page マージンボックス）。
+// %s には cssString でエスケープ済みの文字列が入る。表紙は余白が 0 のため描かない。
+const classificationCSS = `
+@page {
+  @top-right {
+    content: %s;
+    font-family: "Noto Sans JP", "Noto Sans CJK JP", sans-serif;
+    font-size: 9pt;
+    font-weight: 700;
+    color: #c62828;
+  }
+}
+@page cover {
+  @top-right {
+    content: none;
+  }
+}
+`
+
+// cssString は s を CSS の文字列リテラル（"..."）にする。
+// ASCII の英数字・空白と非 ASCII 文字以外はすべて 16 進エスケープし、
+// 引用符や "</style>" で CSS・HTML が壊れないようにする。
+func cssString(s string) string {
+	var b strings.Builder
+	b.WriteByte('"')
+	for _, r := range s {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9', r == ' ', r > 0x7f:
+			b.WriteRune(r)
+		default:
+			fmt.Fprintf(&b, "\\%06x", r)
+		}
+	}
+	b.WriteByte('"')
+	return b.String()
+}
+
 // Options は HTML 文書の組み立て設定。
 type Options struct {
-	Title        string
-	Body         string // 本文の HTML
-	Cover        *Cover // nil なら表紙なし
-	HighlightCSS string
-	ExtraCSS     string // -css で指定された追加 CSS
-	PaperSize    string
-	PageNumbers  bool
-	BreakLevels  string // "1,2" 形式。この見出しレベルの前で改ページする（空なら改ページしない）
-	KeepLines    int
-	KeepLevels   string // "2,3" 形式
-	CodeKeep     int    // この行数以下のコードブロックはページで分割しない（0 なら常に分割可）
+	Title          string
+	Body           string // 本文の HTML
+	Cover          *Cover // nil なら表紙なし
+	HighlightCSS   string
+	ExtraCSS       string // -css で指定された追加 CSS
+	PaperSize      string
+	PageNumbers    bool
+	Classification string // 機密区分（社外秘など）。空でなければ各ページのヘッダーに表示する
+	BreakLevels    string // "1,2" 形式。この見出しレベルの前で改ページする（空なら改ページしない）
+	KeepLines      int
+	KeepLevels     string // "2,3" 形式
+	CodeKeep       int    // この行数以下のコードブロックはページで分割しない（0 なら常に分割可）
 }
 
 // ValidPaperSize は用紙サイズの文字列を検証する。CSS に直接埋め込むため英数字・空白・ピリオドのみ許可する。
@@ -124,12 +162,15 @@ func Build(o Options) ([]byte, error) {
 		}
 	}
 
-	// CSS: ハイライト → 既定 → ページ番号 → -keep-lines → 追加 → 用紙サイズ の順（後勝ち）
+	// CSS: ハイライト → 既定 → ページ番号 → 機密区分 → -keep-lines → 追加 → 用紙サイズ の順（後勝ち）
 	var css strings.Builder
 	css.WriteString(o.HighlightCSS)
 	css.WriteString(defaultCSS)
 	if o.PageNumbers {
 		css.WriteString(pageNumberCSS)
+	}
+	if c := strings.TrimSpace(o.Classification); c != "" {
+		fmt.Fprintf(&css, classificationCSS, cssString(c))
 	}
 	if o.KeepLines > 0 {
 		fmt.Fprintf(&css, "\n:root { --keep-lines: %d; }\n", o.KeepLines)

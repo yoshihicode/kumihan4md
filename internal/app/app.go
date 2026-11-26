@@ -59,6 +59,8 @@ func Run(o Options) error {
 
 	title := resolveTitle(o, doc)
 
+	classification := markdown.MetaString(doc.Meta, "classification")
+
 	var cover *page.Cover
 	if o.Cover || markdown.MetaBool(doc.Meta, "cover") {
 		labels, err := resolveCoverLabels(o.CoverLabels, markdown.MetaStringMap(doc.Meta, "cover_labels"))
@@ -66,13 +68,14 @@ func Run(o Options) error {
 			return err
 		}
 		cover = &page.Cover{
-			Labels:       labels,
-			Title:        title,
-			Subtitle:     markdown.MetaString(doc.Meta, "subtitle"),
-			Author:       markdown.MetaString(doc.Meta, "author"),
-			Organization: markdown.MetaString(doc.Meta, "organization"),
-			Date:         doc.Date("date"),
-			Version:      markdown.MetaString(doc.Meta, "version"),
+			Labels:         labels,
+			Title:          title,
+			Subtitle:       markdown.MetaString(doc.Meta, "subtitle"),
+			Author:         markdown.MetaString(doc.Meta, "author"),
+			Organization:   markdown.MetaString(doc.Meta, "organization"),
+			Date:           doc.Date("date"),
+			Version:        markdown.MetaString(doc.Meta, "version"),
+			Classification: classification,
 		}
 	}
 
@@ -91,17 +94,18 @@ func Run(o Options) error {
 
 	// HTML 文書の組み立て
 	html, err := page.Build(page.Options{
-		Title:        title,
-		Body:         body,
-		Cover:        cover,
-		HighlightCSS: hlCSS,
-		ExtraCSS:     extraCSS,
-		PaperSize:    o.PaperSize,
-		PageNumbers:  o.PageNumbers,
-		BreakLevels:  o.BreakLevels,
-		KeepLines:    o.KeepLines,
-		KeepLevels:   o.KeepLevels,
-		CodeKeep:     o.CodeKeepLines,
+		Title:          title,
+		Body:           body,
+		Cover:          cover,
+		HighlightCSS:   hlCSS,
+		ExtraCSS:       extraCSS,
+		PaperSize:      o.PaperSize,
+		PageNumbers:    o.PageNumbers,
+		Classification: classification,
+		BreakLevels:    o.BreakLevels,
+		KeepLines:      o.KeepLines,
+		KeepLevels:     o.KeepLevels,
+		CodeKeep:       o.CodeKeepLines,
 	})
 	if err != nil {
 		return err

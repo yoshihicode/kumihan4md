@@ -6,6 +6,7 @@ organization: ほげほげ株式会社
 date: "2026年11月20日"
 version: "1.0"
 cover: true
+classification: 社外秘
 cover_labels:
   version: 版
   date: 日付

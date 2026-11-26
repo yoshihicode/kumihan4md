@@ -117,6 +117,7 @@ title: Proposal Title        # cover page and PDF title (-title takes precedence
 subtitle: Subtitle
 author: Author Name
 organization: Company Name
+classification: Confidential # shown at the top right of every page
 date: 2026-11-20             # shown as "November 20, 2026"; quote it ("2026年11月20日") to show it as written
 version: "1.0"               # quote it, or it becomes the number 1
 cover: true                  # same as -cover
@@ -135,6 +136,7 @@ toc: true                    # same as -toc
 | subtitle | string | Subtitle on the cover page | |
 | author | string | Author on the cover page | |
 | organization | string | Organization on the cover page | |
+| classification | string | Confidentiality label (e.g. `Confidential`) | Shown at the top right of every page (in a larger size on the cover page). |
 | date | string / date | Date on the cover page | An unquoted date is formatted as `January 2, 2006`. |
 | version | string | Version on the cover page | Quote it, e.g. `"1.0"`. |
 | cover | bool | Generate a cover page | Same as `-cover` |

@@ -29,6 +29,7 @@
       </div>{{end}}
     </dl>
     {{with .Organization}}<div class="cover-org">{{.}}</div>{{end}}
+    {{with .Classification}}<div class="cover-classification">{{.}}</div>{{end}}
   </section>
   {{end}}
   <main class="markdown-body">

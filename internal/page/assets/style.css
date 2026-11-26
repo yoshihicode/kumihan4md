@@ -8,6 +8,7 @@
 :root {
   --fg: #1f2328;
   --muted: #59636e;
+  --classification: #c62828;
   --border: #d1d9e0;
   --code-bg: #f6f8fa;
   --accent: #0087FF;
@@ -219,6 +220,7 @@ pre.chroma .line {
   page: cover;
   break-after: page;
   padding: 75mm 25mm 0;
+  position: relative; /* .cover-classification の配置基準 */
 }
 
 .cover-main {
@@ -263,6 +265,18 @@ pre.chroma .line {
   padding-left: 14mm;
   font-size: 13pt;
   font-weight: 700;
+}
+
+/* 機密区分（社外秘など）。本文ページのヘッダーと同じ右上に置く（表紙は余白 0 のため @page では描けない）。
+   右端は本文ページの右余白（18mm）に揃える。色は page.go の classificationCSS と揃える */
+.cover-classification {
+  position: absolute;
+  top: 12mm;
+  right: 18mm;
+  font-size: 24pt;
+  font-weight: 700;
+  color: var(--classification);
+  text-align: right;
 }
 
 /* ===== 目次 ===== */
